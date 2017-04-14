@@ -1,0 +1,26 @@
+{
+  "name": "bot-des-devs",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SalonDesDevs/bot-des-devs.git"
+  },
+  "keywords": [
+    "bot",
+    "discord"
+  ],
+  "author": "Salon Des Développeurs",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SalonDesDevs/bot-des-devs/issues"
+  },
+  "homepage": "https://github.com/SalonDesDevs/bot-des-devs#readme",
+  "dependencies": {
+    "krobotjs": "git+https://git@github.com/krobot-framework/krobotjs.git"
+  }
+}
