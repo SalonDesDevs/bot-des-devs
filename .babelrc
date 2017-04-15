@@ -1,0 +1,15 @@
+{
+    "presets": ["stage-2", ["env", {
+        "targets": {
+            "node": "current"
+        },
+            "exclude": ["transform-async-to-generator"]
+    }]],
+        "plugins": [
+            "transform-flow-strip-types",
+        "syntax-flow", ["flow-runtime", {
+            "assert": true,
+            "annotate": true
+        }], "transform-decorators-legacy"
+        ]
+}
