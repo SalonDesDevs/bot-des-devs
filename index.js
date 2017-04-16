@@ -40,7 +40,7 @@ bot.on('message', message => {
 
 bot.on('messageUpdate', (o, n) => {
     linkChecker(n);
-}
+});
 
 function linkChecker(message) {
         // If the message is a command, then it will be executed and will return "true"
