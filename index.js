@@ -32,39 +32,45 @@ commands.group().prefix("#").apply(_ => {
 });
 
 // The regexp can only validate the syntax.
-const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] ?([\w\W]+https?:\/\/[\w\W]*)/i;
 
 bot.on('message', message => {
-    linkChecker(message);
+    main(message);
 });
 
-bot.on('messageUpdate', (o, n) => {
-    linkChecker(n);
+bot.on('messageUpdate', (oldMessage, message) => {
+    main(message);
 });
 
-function linkChecker(message) {
-        // If the message is a command, then it will be executed and will return "true"
+function main(message) {
+    // If the message is a command, then it will be executed and will return "true"
     // yet, if there is no command, it will return "false"
     if (!commands.dispatch(message)) {
         let channel = message.channel;
-        if(channel.name === 'liens') {
-            console.log(message.content);
-            console.log('New message in #liens, checking for formatting errors');
-            let matches = message.content.match(linkFormatRegexp) || [];
-            if(matches.length === 0) {
-                console.log('Message incorectly formatted. Deleting');
-                message.delete();
-                console.log('Sending deleted message to its author');
-                message.author.send('Le lien que vous avez envoyé dans #liens est mal formatté !');
-                message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description, contenant au mimimum un lien');
-                message.author.send('Voici le message que vous avez envoyé :');
-                message.author.sendCode('markdown', message.content);
-            } else {
-                console.log('Message is correctly formatted ! Yay !');
-                console.log('Category:', matches[2]);
-                console.log('Description:', matches[3]);
-            }
+        if (channel.name === 'liens') {
+            // Execute action related to links
+            link(message);
         }
+    }
+}
+
+const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] ?([\w\W]+https?:\/\/[\w\W]*)/i;
+
+function link(message) {
+    console.log(message.content);
+    console.log('New message in #liens, checking for formatting errors');
+    let matches = message.content.match(linkFormatRegexp) || [];
+    if (matches.length === 0) {
+        console.log('Message incorectly formatted. Deleting');
+        message.delete();
+        console.log('Sending deleted message to its author');
+        message.author.send('Le lien que vous avez envoyé dans #liens est mal formatté !');
+        message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description, contenant au mimimum un lien');
+        message.author.send('Voici le message que vous avez envoyé :');
+        message.author.sendCode('markdown', message.content);
+    } else {
+        console.log('Message is correctly formatted ! Yay !');
+        console.log('Category:', matches[2]);
+        console.log('Description:', matches[3]);
     }
 }
 
