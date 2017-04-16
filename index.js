@@ -35,7 +35,15 @@ commands.group().prefix("#").apply(_ => {
 const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] ?([\w\W]+https?:\/\/[\w\W]*)/i;
 
 bot.on('message', message => {
-    // If the message is a command, then it will be executed and will return "true"
+    linkChecker(message);
+});
+
+bot.on('messageUpdate', newMessage => {
+    linkChecker(newMessage);
+}
+
+function linkChecker(message) {
+        // If the message is a command, then it will be executed and will return "true"
     // yet, if there is no command, it will return "false"
     if (!commands.dispatch(message)) {
         let channel = message.channel;
@@ -58,8 +66,8 @@ bot.on('message', message => {
             }
         }
     }
-    // continue actions
-});
+}
+
 bot.on('ready', _ => console.log('Connected'));
 bot.on('reconnecting', _ => console.log('Reconnecting'));
 bot.on('error', error => console.error(error));
