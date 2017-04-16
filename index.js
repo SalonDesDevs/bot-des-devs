@@ -31,10 +31,8 @@ commands.group().prefix("#").apply(_ => {
         .sub("moche", (message, args) => message.reply('t es moche 2')).register();
 });
 
-// The regexp can both validate the format and extract the contents.
-// The second match is the Category, the third is the Description, and the fourth contains
-// the urls.
-const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] *([\w\W]+?) *[\n:]+ *(https?:\/\/[\w\W]+)$/i;
+// The regexp can only validate the syntax.
+const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] ?([\w\W]+https?:\/\/[\w\W]*)/i;
 
 bot.on('message', message => {
     // If the message is a command, then it will be executed and will return "true"
@@ -50,14 +48,13 @@ bot.on('message', message => {
                 message.delete();
                 console.log('Sending deleted message to its author');
                 message.author.send('Le lien que vous avez envoyé dans #liens est mal formatté !');
-                message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description: lien`');
+                message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description, contenant au mimimum un lien');
                 message.author.send('Voici le message que vous avez envoyé :');
-                message.author.send(message.content);
+                message.author.sendCode('markdown', message.content);
             } else {
                 console.log('Message is correctly formatted ! Yay !');
                 console.log('Category:', matches[2]);
                 console.log('Description:', matches[3]);
-                console.log('Link(s):', matches[4].split(/\s/g));
             }
         }
     }

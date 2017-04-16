@@ -84,7 +84,3 @@ tags
 !.vscode/extensions.json
 
 # End of https://www.gitignore.io/api/vim,node,visualstudiocode
-
-# Ignore compiled files
-build
-build/*

@@ -4,8 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "mkdir -p build && babel index.js --out-file build/index.js",
-        "start": "npm build && node index-compiled.js"
+        "start": "node index.js",
+        "nodemon": "nodemon index.js",
+        "forever": "forever start -a -o bot.log -e bot.log -l bot.log index.js"
     },
     "repository": {
         "type": "git",
