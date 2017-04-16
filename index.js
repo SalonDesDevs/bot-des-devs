@@ -38,8 +38,8 @@ bot.on('message', message => {
     linkChecker(message);
 });
 
-bot.on('messageUpdate', newMessage => {
-    linkChecker(newMessage);
+bot.on('messageUpdate', (o, n) => {
+    linkChecker(n);
 }
 
 function linkChecker(message) {
