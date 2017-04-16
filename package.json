@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node index.js",
         "nodemon": "nodemon index.js",
-        "forever": "forever start -a -o bot.log -e bot.log -l bot.log index.js"
+        "forever": "forever start --watch -a -o bot.log -e bot.log -l bot.log index.js"
     },
     "repository": {
         "type": "git",
@@ -25,15 +25,5 @@
     "dependencies": {
         "discord.js": "^11.0.0",
         "krobotjs": "git+https://git@github.com/krobot-framework/krobotjs.git"
-    },
-    "devDependencies": {
-        "babel-cli": "^6.24.1",
-        "babel-plugin-flow-runtime": "^0.10.0",
-        "babel-plugin-syntax-flow": "^6.18.0",
-        "babel-plugin-transform-decorators-legacy": "^1.3.4",
-        "babel-plugin-transform-flow-strip-types": "^6.22.0",
-        "babel-preset-env": "^1.3.3",
-        "babel-preset-stage-2": "^6.24.1",
-        "flow-runtime": "^0.10.0"
     }
 }
