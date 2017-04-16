@@ -1,29 +1,29 @@
 {
-    "name": "bot-des-devs",
-    "version": "0.0.1",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "start": "node index.js",
-        "nodemon": "nodemon index.js",
-        "forever": "forever start --watch --watchIgnore '*.log' -a -o bot.log -e err.log -l forever.log index.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/SalonDesDevs/bot-des-devs.git"
-    },
-    "keywords": [
-        "bot",
-        "discord"
-    ],
-    "author": "Salon Des Développeurs",
-    "license": "GPL-3.0",
-    "bugs": {
-        "url": "https://github.com/SalonDesDevs/bot-des-devs/issues"
-    },
-    "homepage": "https://github.com/SalonDesDevs/bot-des-devs#readme",
-    "dependencies": {
-        "discord.js": "^11.0.0",
-        "krobotjs": "git+https://git@github.com/krobot-framework/krobotjs.git"
-    }
+  "name": "bot-des-devs",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "nodemon": "nodemon index.js",
+    "forever": "forever start --watch --watchIgnore '*.log' -a -o bot.log -e err.log -l forever.log index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SalonDesDevs/bot-des-devs.git"
+  },
+  "keywords": [
+    "bot",
+    "discord"
+  ],
+  "author": "Salon Des Développeurs",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SalonDesDevs/bot-des-devs/issues"
+  },
+  "homepage": "https://github.com/SalonDesDevs/bot-des-devs#readme",
+  "dependencies": {
+    "discord.js": "^11.0.0",
+    "krobotjs": "^1.0.3"
+  }
 }
