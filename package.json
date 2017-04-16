@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node index.js",
         "nodemon": "nodemon index.js",
-        "forever": "forever start --watch -a -o bot.log -e bot.log -l bot.log index.js"
+        "forever": "forever start --watch --watchIgnore '*.log' -a -o bot.log -e err.log -l forever.log index.js"
     },
     "repository": {
         "type": "git",
