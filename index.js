@@ -60,11 +60,11 @@ function link(message) {
     console.log('New message in #liens, checking for formatting errors');
     let matches = message.content.match(linkFormatRegexp) || [];
     if (matches.length === 0) {
-        console.log('Message incorectly formatted. Deleting');
+        console.log('Message incorrectly formatted. Deleting');
         message.delete();
         console.log('Sending deleted message to its author');
         message.author.send('Le lien que vous avez envoyé dans #liens est mal formatté !');
-        message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description, contenant au mimimum un lien');
+        message.author.send('Pour rappel, vous devez utiliser la syntaxe: `[**Catégorie**] Description, contenant au mimimum un lien`');
         message.author.send('Voici le message que vous avez envoyé :');
         message.author.sendCode('markdown', message.content);
     } else {
