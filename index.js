@@ -17,6 +17,7 @@ const commands = new CommandManager({
     }]
 });
 const fs = require('fs');
+const request = require('request');
 let data = {};
 loadData();
 
@@ -69,6 +70,8 @@ commands.group().prefix('/').apply(_ => {
                 encodeURIComponent(args.get('message').join(' ')).replace(/%20/g, '+'))
         }
     ).register();
+    commands.command('straw <title> <options...>', 
+        (message, args) => createPoll(args.get('title'), args.get('options').join(' ').split('/'), false, message)).register();
 });
 
 bot.on('message', message => {
@@ -124,6 +127,23 @@ function loadData() {
     });
     data.events = data.events || {}
     data.teams = data.teams || {};
+}
+
+function createPoll(title, options, multi, message) {
+    const apiUri = 'https://www.strawpoll.me/api/v2/polls';
+    request.post(apiUri, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        json: {
+            title,
+            options,
+            multi
+        }
+    }, (error, response, body) => {
+        console.log(body)
+        message.channel.send('https://www.strawpoll.me/' + body.id);
+    });
 }
 
 bot.on('ready', _ => console.log('Connected'));
