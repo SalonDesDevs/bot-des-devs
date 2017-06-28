@@ -22,23 +22,12 @@ let data = {};
 loadData();
 
 // Create a command group
-commands.group().prefix('/').apply(_ => {
+commands.group().prefix('.').apply(_ => {
     commands.command('ping', message => message.reply('pong !')).register();
-    let event = commands.command('event', (message, args) => {
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('Utilisation: ')
-            .addField('Créer un évenement: ', '/event create <nom de l\'event> <date de départ> <date de fin>')
-            .addField('Créer un évenement par équipes: ',
-                '/event create teams <minimum> <maximum> <nom de l\'event> <date de départ> <date de fin>')
-            .addField('Rejoindre un évenement: ', '/event join <nom de l\'event>')
-            .addField('Créer une équipe: ', '/team create <nom de la team> <nom de l\'event>')
-            .addField('Inviter dans une équipe: ', '/team invite <Pseudo>')
-            .addField('Rejoindre une équipe:', '/team join <nom de la team>')
-        )
-    }).register();
-    event.sub('create <eventName> <startDate> <endDate>', (message, args) => {
-        let startDate = args.get('startDate').replace(' ', 'T');
-        let endDate = args.get('endDate').replace(' ', 'T');
+    let event = commands.command('event', _ => 0).register();
+    event.sub('create <eventName> <startDate> <startTime> <endDate> <endTime>', (message, args) => {
+        let startDate = args.get('startDate') + 'T' + args.get('startTime')
+        let endDate = args.get('endDate') + 'T' + args.get('endTime')
         if (Number.isNaN(Date.parse(startDate)) || Number.isNaN(Date.parse(endDate))) {
             console.log('Wrong format for event creation');
             message.reply('Mauvais format de date. Vous devez utiliser le format AAAA-MM-JJ HH:MM')
@@ -58,12 +47,6 @@ commands.group().prefix('/').apply(_ => {
     event.sub('join <event>', (message, args) => {
         message.reply(args.get('event'));
     }).register();
-    commands.command('google', (message, args) => {
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .addField('Utilisation: ', '/g @Tag recherche')
-            .addField('Exemple: ', '/g <@!302550798829748224> Pourquoi t\'es nul ?')
-        )
-    }).register();
     commands.command('g <tag> <message...>', (message, args) => {
             message.delete();
             message.channel.send(args.get('tag') + ', http://lmgtfy.com/?q=' +
@@ -72,6 +55,45 @@ commands.group().prefix('/').apply(_ => {
     ).register();
     commands.command('straw <title> <options...>', 
         (message, args) => createPoll(args.get('title'), args.get('options').join(' ').split('/'), false, message)).register();
+    commands.command('help', (message, args) => {
+        message.channel.sendEmbed(new Discord.RichEmbed()
+            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
+            .setTitle('LMGTFY')
+            .setColor([22, 117, 207])
+            .addField('Utilisation: ', '.g @Tag recherche')
+            .addField('Exemple: ', '.g <@!302550798829748224> Pourquoi t\'es nul ?')
+        );
+        message.channel.sendEmbed(new Discord.RichEmbed()
+            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
+            .setTitle('Strawpoll')
+            .setColor([22, 117, 207])
+            .addField('Utilisation: ', '.straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
+            .addField('Exemple: ', '.straw "Que préferez-vous ?" Les pizza/Les hamburgers')
+        );
+        message.channel.sendEmbed(new Discord.RichEmbed()
+            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
+            .setTitle('Event')
+            .setColor([22, 117, 207])
+            .addField('Créer un évenement: ', '.event create <nom de l\'event> <date de départ> <date de fin>')
+            .addField('Créer un évenement par équipes: ',
+                '.event create teams <minimum> <maximum> <nom de l\'event> <date de départ> <date de fin>')
+            .addField('Rejoindre un évenement: ', '.event join <nom de l\'event>')
+        );
+        message.channel.sendEmbed(new Discord.RichEmbed()
+            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
+            .setTitle('Équipes')
+            .setColor([22, 117, 207])
+            .addField('Créer une équipe: ', '.team create <nom de la team> <nom de l\'event>')
+            .addField('Inviter dans une équipe: ', '.team invite <Pseudo>')
+            .addField('Rejoindre une équipe:', '.team join <nom de la team>')
+        );
+        message.channel.sendEmbed(new Discord.RichEmbed()
+            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
+            .setTitle('Ping')
+            .setColor([22, 117, 207])
+            .addField('Utilisation: ', '.ping')
+        );
+    }).register();
 });
 
 bot.on('message', message => {
@@ -87,7 +109,7 @@ function main(message) {
     // yet, if there is no command, it will return false
     if (!commands.dispatch(message)) {
         let channel = message.channel;
-        if (channel.name === 'liens') {
+        if (channel.name === 'liens' || channel.name === 'liens-non-dev') {
             // Execute action related to links
             link(message);
         }
