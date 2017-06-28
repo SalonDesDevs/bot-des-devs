@@ -22,7 +22,7 @@ let data = {};
 loadData();
 
 // Create a command group
-commands.group().prefix('.').apply(_ => {
+commands.group().prefix('!').apply(_ => {
     commands.command('ping', message => message.reply('pong !')).register();
     let event = commands.command('event', _ => 0).register();
     event.sub('create <eventName> <startDate> <startTime> <endDate> <endTime>', (message, args) => {
@@ -60,38 +60,38 @@ commands.group().prefix('.').apply(_ => {
             .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('LMGTFY')
             .setColor([22, 117, 207])
-            .addField('Utilisation: ', '.g @Tag recherche')
-            .addField('Exemple: ', '.g <@!302550798829748224> Pourquoi t\'es nul ?')
+            .addField('Utilisation: ', '!g @Tag recherche')
+            .addField('Exemple: ', '!g <@!302550798829748224> Pourquoi t\'es nul ?')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
             .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Strawpoll')
             .setColor([22, 117, 207])
-            .addField('Utilisation: ', '.straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
-            .addField('Exemple: ', '.straw "Que préferez-vous ?" Les pizza/Les hamburgers')
+            .addField('Utilisation: ', '!straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
+            .addField('Exemple: ', '!straw "Que préferez-vous ?" Les pizza/Les hamburgers')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
             .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Event')
             .setColor([22, 117, 207])
-            .addField('Créer un évenement: ', '.event create <nom de l\'event> <date de départ> <date de fin>')
+            .addField('Créer un évenement: ', '!event create <nom de l\'event> <date de départ> <date de fin>')
             .addField('Créer un évenement par équipes: ',
-                '.event create teams <minimum> <maximum> <nom de l\'event> <date de départ> <date de fin>')
-            .addField('Rejoindre un évenement: ', '.event join <nom de l\'event>')
+                '!event create teams <minimum> <maximum> <nom de l\'event> <date de départ> <date de fin>')
+            .addField('Rejoindre un évenement: ', '!event join <nom de l\'event>')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
             .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Équipes')
             .setColor([22, 117, 207])
-            .addField('Créer une équipe: ', '.team create <nom de la team> <nom de l\'event>')
-            .addField('Inviter dans une équipe: ', '.team invite <Pseudo>')
-            .addField('Rejoindre une équipe:', '.team join <nom de la team>')
+            .addField('Créer une équipe: ', '!team create <nom de la team> <nom de l\'event>')
+            .addField('Inviter dans une équipe: ', '!team invite <Pseudo>')
+            .addField('Rejoindre une équipe:', '!team join <nom de la team>')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
             .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Ping')
             .setColor([22, 117, 207])
-            .addField('Utilisation: ', '.ping')
+            .addField('Utilisation: ', '!ping')
         );
     }).register();
 });
