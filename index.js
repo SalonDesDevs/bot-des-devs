@@ -89,6 +89,7 @@ commands.group().prefix('!').apply(_ => {
             .addField('Utilisation: ', '!ping')
         );
     }).register();
+    commands.command('forecebd', _ => sendMessageIfBirthday()).register();
 });
 
 bot.on('message', message => {
