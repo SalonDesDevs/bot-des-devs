@@ -180,7 +180,7 @@ function mention(searchPattern) {
     return matching.length === 1 ? `<@${matching[0]}>` : searchPattern;
 }
 
-new CronJob('0 9  * * *', function() {
+new CronJob('1 0  * * *', function() {
   sendMessageIfBirthday();
 }, null, true, 'Europe/Paris');
 
