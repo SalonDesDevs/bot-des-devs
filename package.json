@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/SalonDesDevs/bot-des-devs#readme",
   "dependencies": {
+    "cron": "^1.2.1",
     "discord.js": "^11.0.0",
     "google-auth-library": "^0.10.0",
     "googleapis": "^20.0.1",

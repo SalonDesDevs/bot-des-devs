@@ -1,7 +1,5 @@
 const Discord = require('discord.js');
-const {
-    CommandManager
-} = require('krobotjs');
+const {CommandManager} = require('krobotjs');
 const bot = new Discord.Client();
 const commands = new CommandManager({
     parse: [{
@@ -18,6 +16,8 @@ const commands = new CommandManager({
 });
 const fs = require('fs');
 const request = require('request');
+const birthdays = require('./lib/birthdays.js');
+const {CronJob} = require('cron');
 let data = {};
 loadData();
 
@@ -48,30 +48,27 @@ commands.group().prefix('!').apply(_ => {
         message.reply(args.get('event'));
     }).register();
     commands.command('g <tag> <message...>', (message, args) => {
-            message.delete();
-            message.channel.send(args.get('tag') + ', http://lmgtfy.com/?q=' +
-                encodeURIComponent(args.get('message').join(' ')).replace(/%20/g, '+'))
-        }
+        message.delete();
+        message.channel.send(args.get('tag') + ', http://lmgtfy.com/?q=' +
+            encodeURIComponent(args.get('message').join(' ')).replace(/%20/g, '+'))
+    }
     ).register();
-    commands.command('straw <title> <options...>', 
+    commands.command('straw <title> <options...>',
         (message, args) => createPoll(args.get('title'), args.get('options').join(' ').split('/'), false, message)).register();
     commands.command('help', (message, args) => {
         message.channel.sendEmbed(new Discord.RichEmbed()
-            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('LMGTFY')
             .setColor([22, 117, 207])
             .addField('Utilisation: ', '!g @Tag recherche')
             .addField('Exemple: ', '!g <@!302550798829748224> Pourquoi t\'es nul ?')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
-            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Strawpoll')
             .setColor([22, 117, 207])
             .addField('Utilisation: ', '!straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
             .addField('Exemple: ', '!straw "Que préferez-vous ?" Les pizza/Les hamburgers')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
-            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Event')
             .setColor([22, 117, 207])
             .addField('Créer un évenement: ', '!event create <nom de l\'event> <date de départ> <date de fin>')
@@ -80,7 +77,6 @@ commands.group().prefix('!').apply(_ => {
             .addField('Rejoindre un évenement: ', '!event join <nom de l\'event>')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
-            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Équipes')
             .setColor([22, 117, 207])
             .addField('Créer une équipe: ', '!team create <nom de la team> <nom de l\'event>')
@@ -88,7 +84,6 @@ commands.group().prefix('!').apply(_ => {
             .addField('Rejoindre une équipe:', '!team join <nom de la team>')
         );
         message.channel.sendEmbed(new Discord.RichEmbed()
-            .setThumbnail('https://cdn.rawgit.com/google/material-design-icons/a6145e16/action/drawable-xhdpi/ic_help_white_24dp.png')
             .setTitle('Ping')
             .setColor([22, 117, 207])
             .addField('Utilisation: ', '!ping')
@@ -167,6 +162,27 @@ function createPoll(title, options, multi, message) {
         message.channel.send('https://www.strawpoll.me/' + body.id);
     });
 }
+
+function sendMessageIfBirthday() {
+    let channel = bot.guilds.first().channels.find('name', 'bots');
+    birthdays.getTodaysBirthdays(bds => {
+        bds.map(row =>
+            channel.send('Bon anniversaire à ' + mention(row[0]) + ', qui fête ses ' + row[2] + ' ans aujourd\'hui !')
+        );
+    })
+}
+
+function mention(searchPattern) {
+    let matching = bot.guilds.first().members
+        .map(elem => elem.user)
+        .filter(user => user.username.indexOf(searchPattern) >= 0)
+        .map(user => user.id);
+    return matching.length === 1 ? `<@${matching[0]}>` : searchPattern;
+}
+
+new CronJob('0 9  * * *', function() {
+  sendMessageIfBirthday();
+}, null, true, 'Europe/Paris');
 
 bot.on('ready', _ => console.log('Connected'));
 bot.on('reconnecting', _ => console.log('Reconnecting'));
