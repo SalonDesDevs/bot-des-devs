@@ -87,3 +87,6 @@ tags
 
 # Data file
 data.json
+
+# Google API credentials file
+client_secret.json
