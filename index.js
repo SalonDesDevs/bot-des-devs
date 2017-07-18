@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
-const {CommandManager} = require('krobotjs');
+const {
+    CommandManager
+} = require('krobotjs');
 const bot = new Discord.Client();
 const commands = new CommandManager({
     parse: [{
@@ -17,7 +19,9 @@ const commands = new CommandManager({
 const fs = require('fs');
 const request = require('request');
 const birthdays = require('./lib/birthdays.js');
-const {CronJob} = require('cron');
+const {
+    CronJob
+} = require('cron');
 let data = {};
 loadData();
 
@@ -51,8 +55,7 @@ commands.group().prefix('!').apply(_ => {
         message.delete();
         message.channel.send(args.get('tag') + ', http://lmgtfy.com/?q=' +
             encodeURIComponent(args.get('message').join(' ')).replace(/%20/g, '+'))
-    }
-    ).register();
+    }).register();
     commands.command('straw <title> <options...>',
         (message, args) => createPoll(args.get('title'), args.get('options').join(' ').split('/'), false, message)).register();
     commands.command('help', (message, args) => {
@@ -90,6 +93,24 @@ commands.group().prefix('!').apply(_ => {
         );
     }).register();
     commands.command('forcebd', _ => sendMessageIfBirthday()).register();
+    commands.command('deltaw', message => {
+        message.channel.send('<:delta1:336963749875417088><:delta2:336963752622686210>\n' +
+            '<:delta3:336963752991916042><:delta4:336963753096773632>');
+        message.delete();
+    }).register();
+
+    commands.command('delta', message => {
+        message.channel.send('<:delta0:336966048525975553><:delta1:336966048991543296>\n' +
+            '<:delta2:336966048953794571><:delta3:336966049343864834>');
+        message.delete();
+    }).register();
+    commands.command('dermen', message => {
+        message.channel.send('<:dermen0:336975016602107906><:dermen1:336975017374121985>\n' +
+            '<:dermen2:336975019244650527><:dermen3:336975019378737155>\n' +
+            '<:dermen4:336975020372787200><:dermen5:336975020947406849>\n' +
+            '<:dermen6:336975021224493056><:dermen7:336975021656375301>');
+        message.delete();
+    }).register();
 });
 
 bot.on('message', message => {
@@ -182,10 +203,17 @@ function mention(searchPattern) {
 }
 
 new CronJob('1 0  * * *', function() {
-  sendMessageIfBirthday();
+    sendMessageIfBirthday();
 }, null, true, 'Europe/Paris');
 
-bot.on('ready', _ => console.log('Connected'));
+bot.on('ready', _ => {
+    bot.user.setStatus('online', {
+        name: 'salondesdevs.io/discord',
+        url: 'https://salondesdevs.io/discord',
+        type: 1
+    });
+    console.log('Connected');
+});
 bot.on('reconnecting', _ => console.log('Reconnecting'));
 bot.on('error', error => console.error(error));
 
