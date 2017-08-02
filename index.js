@@ -139,7 +139,7 @@ function createPoll(title, options, multi, message) {
 }
 
 function sendMessageIfBirthday() {
-    let channel = client.guilds.first().channels.find('name', 'annonces');
+    let channel = client.guilds.find('name', 'Salon des développeurs').channels.find('name', 'annonces');
     birthdays.getTodaysBirthdays(bds => {
         bds.map(row =>
             channel.send(':birthday: Bon anniversaire à ' + mention(row[0]) + ', qui fête ses ' + row[2] + ' ans aujourd\'hui ! :birthday:')
