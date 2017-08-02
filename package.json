@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "forever": "forever start --watch --watchIgnore '*.log' --watchIgnore '*.json' -a -o $PWD/logs/bot.log -e $PWD/logs/err.log -l $PWD/logs/forever.log index.js"
+    "forever": "forever start --watch --watchIgnore '*.log' -a -o $PWD/logs/bot.log -e $PWD/logs/err.log -l $PWD/logs/forever.log index.js"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
     "discord.js": "^11.0.0",
     "google-auth-library": "^0.10.0",
     "googleapis": "^20.0.1",
-    "krobotjs": "^1.0.3",
     "moment-timezone": "^0.5.13",
     "request": "^2.81.0"
   }

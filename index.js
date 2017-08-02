@@ -1,139 +1,105 @@
+/*eslint indent: ["error", 4, { "SwitchCase": 1 }]*/
 const Discord = require('discord.js');
-const {
-    CommandManager
-} = require('krobotjs');
-const bot = new Discord.Client();
-const commands = new CommandManager({
-    parse: [{
-        // Match user (<@ID>)
-        match(message, arg) {
-            return (/^<@((\d)+)>$/g).test(arg)
-        },
-        // Replace it with an instance of Discord.User(ID)
-        async perform(message, arg) {
-            const gmember = await message.channel.guild.fetchMember((/^<@((\d)+)>$/g).exec(arg)[1]);
-            return gmember.user;
-        }
-    }]
-});
-const fs = require('fs');
 const request = require('request');
 const birthdays = require('./lib/birthdays.js');
-const {
-    CronJob
-} = require('cron');
-let data = {};
-loadData();
+const CronJob = require('cron').CronJob;
+const client = new Discord.Client();
+const prefix = '!';
 
-// Create a command group
-commands.group().prefix('!').apply(_ => {
-    commands.command('ping', message => message.reply('pong !')).register();
-    let event = commands.command('event', _ => 0).register();
-    event.sub('create <eventName> <startDate> <startTime> <endDate> <endTime>', (message, args) => {
-        let startDate = args.get('startDate') + 'T' + args.get('startTime')
-        let endDate = args.get('endDate') + 'T' + args.get('endTime')
-        if (Number.isNaN(Date.parse(startDate)) || Number.isNaN(Date.parse(endDate))) {
-            console.log('Wrong format for event creation');
-            message.reply('Mauvais format de date. Vous devez utiliser le format AAAA-MM-JJ HH:MM')
-            return;
-        }
-        data.events[args.get('eventName')] = {
-            name: args.get('eventName'),
-            begins: Date.parse(startDate),
-            ends: Date.parse(endDate),
-            members: []
-        };
-        console.log(data);
-        message.reply('l\'évenement ' + args.get('eventName') + ' a été créé du ' +
-            new Date(Date.parse(startDate)).toLocaleString() + ' au ' +
-            new Date(Date.parse(endDate)).toLocaleString());
-    }).register()
-    event.sub('join <event>', (message, args) => {
-        message.reply(args.get('event'));
-    }).register();
-    commands.command('g <tag> <message...>', (message, args) => {
-        message.delete();
-        message.channel.send(args.get('tag') + ', http://lmgtfy.com/?q=' +
-            encodeURIComponent(args.get('message').join(' ')).replace(/%20/g, '+'))
-    }).register();
-    commands.command('straw <title> <options...>',
-        (message, args) => createPoll(args.get('title'), args.get('options').join(' ').split('/'), false, message)).register();
-    commands.command('help', (message, args) => {
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('LMGTFY')
-            .setColor([22, 117, 207])
-            .addField('Utilisation: ', '!g @Tag recherche')
-            .addField('Exemple: ', '!g <@!302550798829748224> Pourquoi t\'es nul ?')
-        );
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('Strawpoll')
-            .setColor([22, 117, 207])
-            .addField('Utilisation: ', '!straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
-            .addField('Exemple: ', '!straw "Que préferez-vous ?" Les pizza/Les hamburgers')
-        );
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('Event')
-            .setColor([22, 117, 207])
-            .addField('Créer un évenement: ', '!event create <nom de l\'event> <date de départ> <date de fin>')
-            .addField('Créer un évenement par équipes: ',
-                '!event create teams <minimum> <maximum> <nom de l\'event> <date de départ> <date de fin>')
-            .addField('Rejoindre un évenement: ', '!event join <nom de l\'event>')
-        );
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('Équipes')
-            .setColor([22, 117, 207])
-            .addField('Créer une équipe: ', '!team create <nom de la team> <nom de l\'event>')
-            .addField('Inviter dans une équipe: ', '!team invite <Pseudo>')
-            .addField('Rejoindre une équipe:', '!team join <nom de la team>')
-        );
-        message.channel.sendEmbed(new Discord.RichEmbed()
-            .setTitle('Ping')
-            .setColor([22, 117, 207])
-            .addField('Utilisation: ', '!ping')
-        );
-    }).register();
-    commands.command('forcebd', _ => sendMessageIfBirthday()).register();
-    commands.command('deltaw', message => {
-        message.channel.send('<:delta1:336963749875417088><:delta2:336963752622686210>\n' +
-            '<:delta3:336963752991916042><:delta4:336963753096773632>');
-        message.delete();
-    }).register();
-
-    commands.command('delta', message => {
-        message.channel.send('<:delta0:336966048525975553><:delta1:336966048991543296>\n' +
-            '<:delta2:336966048953794571><:delta3:336966049343864834>');
-        message.delete();
-    }).register();
-    commands.command('dermen', message => {
-        message.channel.send('<:dermen0:336975016602107906><:dermen1:336975017374121985>\n' +
-            '<:dermen2:336975019244650527><:dermen3:336975019378737155>\n' +
-            '<:dermen4:336975020372787200><:dermen5:336975020947406849>\n' +
-            '<:dermen6:336975021224493056><:dermen7:336975021656375301>');
-        message.delete();
-    }).register();
-});
-
-bot.on('message', message => {
+client.on('message', message => {
     main(message);
 });
 
-bot.on('messageUpdate', (oldMessage, message) => {
+client.on('messageUpdate', (oldMessage, message) => {
     main(message);
 });
 
+
+/**
+ * Bot logic
+ *
+ * @param {Discord.Message} message received message
+ */
 function main(message) {
-    // If the message is a command, then it will be executed and will return "true"
-    // yet, if there is no command, it will return false
-    if (!commands.dispatch(message)) {
-        let channel = message.channel;
-        if (channel.name === 'liens' || channel.name === 'liens-non-dev') {
-            // Execute action related to links
-            link(message);
-        }
+    /* @type {Discord.TextChannel} */
+    const channel = message.channel;
+    if (channel.name === 'liens' || channel.name === 'liens-non-dev') {
+        // Execute action related to links
+        link(message);
+        return;
+    }
+    if (message.content.indexOf(prefix) !== 0) return;
+    console.log(message.content);
+    const command = message.content.split(' ')[0].substring(1);
+    const args = message.content.split(' ').slice(1);
+    switch (command) {
+        case 'ping':
+            message.reply('pong !');
+            break;
+        case 'g':
+            message.delete();
+            message.channel.send(args[0] + ', http://lmgtfy.com/?q=' +
+                encodeURIComponent(args.slice(1).join(' ')).replace(/%20/g, '+'));
+            break;
+        case 'help':
+            message.channel.sendEmbed(new Discord.RichEmbed()
+                .setTitle('LMGTFY')
+                .setColor([22, 117, 207])
+                .addField('Utilisation: ', '!g @Tag recherche')
+                .addField('Exemple: ', '!g <@!302550798829748224> Pourquoi t\'es nul ?')
+            );
+            message.channel.sendEmbed(new Discord.RichEmbed()
+                .setTitle('Strawpoll')
+                .setColor([22, 117, 207])
+                .addField('Utilisation: ', '!straw "Titre du strawpoll" Proposition 1/Proposition 2/Proposition 3/...')
+                .addField('Exemple: ', '!straw "Que préferez-vous ?" Les pizza/Les hamburgers')
+            );
+            message.channel.sendEmbed(new Discord.RichEmbed()
+                .setTitle('Ping')
+                .setColor([22, 117, 207])
+                .addField('Utilisation: ', '!ping')
+            );
+            break;
+        case 'deltaw':
+            message.channel.send('<:delta1:336963749875417088><:delta2:336963752622686210>\n' +
+                '<:delta3:336963752991916042><:delta4:336963753096773632>');
+            message.delete();
+            break;
+        case 'delta':
+            message.channel.send('<:delta0:336966048525975553><:delta1:336966048991543296>\n' +
+                '<:delta2:336966048953794571><:delta3:336966049343864834>');
+            message.delete();
+            break;
+        case 'dermen':
+            message.channel.send('<:dermen0:336975016602107906><:dermen1:336975017374121985>\n' +
+                '<:dermen2:336975019244650527><:dermen3:336975019378737155>\n' +
+                '<:dermen4:336975020372787200><:dermen5:336975020947406849>\n' +
+                '<:dermen6:336975021224493056><:dermen7:336975021656375301>');
+            message.delete();
+            break;
+        case 'straw':
+            let title = '';
+            let choices = [];
+            if(message.content.indexOf('"') === -1) {
+                title = args[0];
+                choices = args.slice(1).join(' ').split('/');
+            } else {
+                console.log('Contains quote');
+                title = args.join(' ').split('"')[1];
+                choices = args.join(' ').split(title).join('').replace('"', '').replace('"', '').split('/');
+            }
+            createPoll(title, choices, false, message)
+            break;
+        case 'forcebd':
+            if(!client.guilds.find('name', 'Salon des développeurs').members.find('id', message.author.id).roles.exists('name', 'Administrateur')) break;
+            sendMessageIfBirthday();
+            break;
+        default:
+            break;
     }
 }
 
-// The regexp can only validate the syntax.
+// The regexp validates the syntax and extracts the data
 const linkFormatRegexp = /^ ?\[((?:\*\*)?)([^*]+?)\1\] ?([\w\W]+https?:\/\/[\w\W]*)/i;
 
 function link(message) {
@@ -155,19 +121,6 @@ function link(message) {
     }
 }
 
-function loadData() {
-    fs.exists('data.js', exists => {
-        if (exists) {
-            // Read synchronously in order not to start the bot without having loaded the data file
-            data = JSON.parse(fs.readFileSync('data.json'));
-        } else {
-            fs.writeFileSync('data.json', '{}');
-        }
-    });
-    data.events = data.events || {}
-    data.teams = data.teams || {};
-}
-
 function createPoll(title, options, multi, message) {
     const apiUri = 'https://www.strawpoll.me/api/v2/polls';
     request.post(apiUri, {
@@ -186,16 +139,16 @@ function createPoll(title, options, multi, message) {
 }
 
 function sendMessageIfBirthday() {
-    let channel = bot.guilds.first().channels.find('name', 'annonces');
+    let channel = client.guilds.first().channels.find('name', 'annonces');
     birthdays.getTodaysBirthdays(bds => {
         bds.map(row =>
             channel.send(':birthday: Bon anniversaire à ' + mention(row[0]) + ', qui fête ses ' + row[2] + ' ans aujourd\'hui ! :birthday:')
         );
-    })
+    });
 }
 
 function mention(searchPattern) {
-    let matching = bot.guilds.first().members
+    let matching = client.guilds.first().members
         .map(elem => elem.user)
         .filter(user => user.username.indexOf(searchPattern) >= 0)
         .map(user => user.id);
@@ -206,15 +159,15 @@ new CronJob('1 0  * * *', function() {
     sendMessageIfBirthday();
 }, null, true, 'Europe/Paris');
 
-bot.on('ready', _ => {
-    bot.user.setStatus('online', {
+client.on('ready', _ => {
+    client.user.setStatus('online', {
         name: 'salondesdevs.io/discord',
         url: 'https://salondesdevs.io/discord',
         type: 1
     });
     console.log('Connected');
 });
-bot.on('reconnecting', _ => console.log('Reconnecting'));
-bot.on('error', error => console.error(error));
+client.on('reconnecting', _ => console.log('Reconnecting'));
+client.on('error', error => console.error(error));
 
-bot.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN);
