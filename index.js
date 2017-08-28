@@ -88,7 +88,7 @@ function main(message) {
                 title = args.join(' ').split('"')[1];
                 choices = args.join(' ').split(title).join('').replace('"', '').replace('"', '').split('/');
             }
-            createPoll(title, choices, false, message)
+            createPoll(title, choices, false, message);
             break;
         case 'forcebd':
             if(!client.guilds.find('name', 'Salon des développeurs').members.get(message.author.id).roles.exists('name', 'Administrateur')) break;
@@ -133,7 +133,7 @@ function createPoll(title, options, multi, message) {
             multi
         }
     }, (error, response, body) => {
-        console.log(body)
+        console.log(body);
         message.channel.send('https://www.strawpoll.me/' + body.id);
     });
 }
@@ -148,7 +148,7 @@ function sendMessageIfBirthday() {
 }
 
 function mention(searchPattern) {
-    let matching = client.guilds.first().members
+    let matching = client.guilds.find('name', 'Salon des développeurs').members
         .map(elem => elem.user)
         .filter(user => user.username.indexOf(searchPattern) >= 0)
         .map(user => user.id);
@@ -159,7 +159,7 @@ new CronJob('1 0  * * *', function() {
     sendMessageIfBirthday();
 }, null, true, 'Europe/Paris');
 
-client.on('ready', _ => {
+client.on('ready', () => {
     client.user.setStatus('online', {
         name: 'salondesdevs.io/discord',
         url: 'https://salondesdevs.io/discord',
@@ -167,7 +167,7 @@ client.on('ready', _ => {
     });
     console.log('Connected');
 });
-client.on('reconnecting', _ => console.log('Reconnecting'));
+client.on('reconnecting', () => console.log('Reconnecting'));
 client.on('error', error => console.error(error));
 
 client.login(process.env.DISCORD_TOKEN);
