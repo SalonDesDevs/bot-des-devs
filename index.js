@@ -91,7 +91,7 @@ function main(message) {
             createPoll(title, choices, false, message)
             break;
         case 'forcebd':
-            if(!client.guilds.find('name', 'Salon des développeurs').members.find('id', message.author.id).roles.exists('name', 'Administrateur')) break;
+            if(!client.guilds.find('name', 'Salon des développeurs').members.get(message.author.id).roles.exists('name', 'Administrateur')) break;
             sendMessageIfBirthday();
             break;
         default:
