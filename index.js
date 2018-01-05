@@ -94,6 +94,8 @@ function main(message) {
             if(!client.guilds.find('name', 'Salon des développeurs').members.get(message.author.id).roles.exists('name', 'Administrateur')) break;
             sendMessageIfBirthday();
             break;
+        case 'node':
+            message.channel.send('https://www.youtube.com/watch?v=IwpBluLjynI');
         default:
             break;
     }
