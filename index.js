@@ -96,6 +96,8 @@ function main(message) {
             break;
         case 'node':
             message.channel.send('https://www.youtube.com/watch?v=IwpBluLjynI');
+        case 'idee':
+            message.channel.send('Tu peux commencer par des choses simple, pour comprendre comment la langue/techno fonctionne:\n\n- Todolist\n- Gestionnaire de temps/argent\n- Un moniteur de ressources (n\'importe lesquels)\n- Un bot discord\n- Une minuterie avec beaucoup d\'options de personnalisations ...')
         default:
             break;
     }
